@@ -71,6 +71,42 @@
 		};
 	};
 
+       common_fp {
+               compatible = "common,fingerprint";
+               interrupt-parent = <&tlmm>;
+               interrupts = <1 0x0>;
+
+               common,gpio_reset    = <&tlmm 2 0>;
+               common,gpio_irq      = <&tlmm 1 0>;
+       };
+
+       goodix_fp {
+               compatible = "goodix,fingerprint";
+               input-device-name = "gf5216";
+               interrupt-parent = <&tlmm>;
+               interrupts = <1 0x0>;
+
+               goodix,gpio_reset    = <&tlmm 2 0>;
+               goodix,gpio_irq      = <&tlmm 1 0>;
+
+               pinctrl-names = "goodixfp_reset_reset",
+                       "goodixfp_reset_active",
+                       "goodixfp_irq_active";
+
+               pinctrl-0 = <&goodix_reset_reset>;
+               pinctrl-1 = <&goodix_reset_active>;
+               pinctrl-2 = <&goodix_irq_active>;
+       };
+
+       cdfinger_fp {
+               compatible = "cdfinger,fingerprint";
+               interrupt-parent = <&tlmm>;
+               interrupts = <1 0x0>;
+               cdfinger,gpio_reset = <&tlmm 2 0>;
+               cdfinger,gpio_irq = <&tlmm 1 0>;
+       };
+
+
 	hbtp {
 		compatible = "qcom,hbtp-input";
 		vcc_ana-supply = <&pm8917_l10>;
