@@ -441,6 +441,33 @@ return error;
 int himax_gpio_power_config(struct i2c_client *client,struct himax_i2c_platform_data *pdata)
 {
 	int error=0;
+	int retval;
+	pdata->vcc_dig = regulator_get(&client->dev,"vdd");
+	if (IS_ERR(pdata->vcc_dig)) {
+		E("%s: Failed to get regulator vdd\n",__func__);
+		retval = PTR_ERR(pdata->vcc_dig);
+		return retval;
+	}
+	pdata->vcc_ana = regulator_get(&client->dev,"avdd");
+	if (IS_ERR(pdata->vcc_ana)) {
+		E("%s: Failed to get regulator avdd\n",__func__);
+		retval = PTR_ERR(pdata->vcc_ana);
+		regulator_put(pdata->vcc_ana);
+		return retval;
+	}
+
+	retval = regulator_enable(pdata->vcc_dig);
+	if (retval) {
+			E("%s: Failed to enable regulator vdd\n",__func__);
+			return retval;
+	}
+	msleep(100);
+	retval = regulator_enable(pdata->vcc_ana);
+	if (retval) {
+		E("%s: Failed to enable regulator avdd\n",__func__);
+		regulator_disable(pdata->vcc_dig);
+		return retval;	
+	}
 
 	if (pdata->gpio_reset >= 0) {
 		error = gpio_request(pdata->gpio_reset, "himax-reset");

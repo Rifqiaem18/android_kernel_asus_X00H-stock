@@ -42,6 +42,8 @@
                         reg = <0x48>;
                         interrupt-parent = <&tlmm>;
                         interrupts = <65 0x2008>;
+                        avdd-supply = <&pm8937_l10>;
+                        vdd-supply = <&pm8937_l5>;
                         himax,panel-coords = <0 720 0 1280>;
                         himax,display-coords = <0 720 0 1280>;
                         himax,irq-gpio = <&tlmm 65 0x0>;

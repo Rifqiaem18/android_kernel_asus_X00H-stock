@@ -22,9 +22,9 @@
 #include <linux/types.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
-#if defined(CONFIG_HMX_DB)
+//#if defined(CONFIG_HMX_DB)
 #include <linux/regulator/consumer.h>
-#endif
+//#endif
 
 #define QCT
 
@@ -99,6 +99,9 @@ struct himax_i2c_platform_data {
 
 	struct himax_config *hx_config;
 	int hx_config_size;
+	struct regulator *vcc_ana; //For Dragon Board
+	struct regulator *vcc_dig; //For Dragon Board
+	
 #if defined(CONFIG_HMX_DB)
 	bool	i2c_pull_up;
 	bool	digital_pwr_regulator;
@@ -107,8 +110,6 @@ struct himax_i2c_platform_data {
 	int irq_gpio;
 	u32 irq_gpio_flags;
 
-	struct regulator *vcc_ana; //For Dragon Board
-	struct regulator *vcc_dig; //For Dragon Board
 	struct regulator *vcc_i2c; //For Dragon Board
 #endif	
 };
