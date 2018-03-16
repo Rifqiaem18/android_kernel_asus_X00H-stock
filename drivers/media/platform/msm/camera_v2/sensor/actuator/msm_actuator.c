@@ -576,11 +576,23 @@ static int32_t msm_actuator_move_focus(
 	int32_t num_steps = move_params->num_steps;
 	struct msm_camera_i2c_reg_setting reg_setting;
 
-	CDBG("called, dir %d, num_steps %d\n", dir, num_steps);
+	CDBG("[actuator]called, dir %d, num_steps %d\n", dir, num_steps);
 
+/*
 	if (dest_step_pos == a_ctrl->curr_step_pos)
 		return rc;
-
+*/
+	if ((dest_step_pos == a_ctrl->curr_step_pos) || 
+	((dest_step_pos <= a_ctrl->total_steps) && 
+	(a_ctrl->step_position_table[dest_step_pos] == 
+	a_ctrl->step_position_table[a_ctrl->curr_step_pos]))) {
+        CDBG("cci:dest_step_pos = %d\n",dest_step_pos);
+        CDBG("cci:a_ctrl->curr_step_pos = %d\n",a_ctrl->curr_step_pos);
+        CDBG("cci:a_ctrl->step_position_table[%d]= %d\n",dest_step_pos,a_ctrl->step_position_table[dest_step_pos]);
+        CDBG("cci:a_ctrl->step_position_table[%d]) = %d\n",a_ctrl->curr_step_pos,a_ctrl->step_position_table[a_ctrl->curr_step_pos]);
+        return rc;
+    }
+     
 	if ((sign_dir > MSM_ACTUATOR_MOVE_SIGNED_NEAR) ||
 		(sign_dir < MSM_ACTUATOR_MOVE_SIGNED_FAR)) {
 		pr_err("Invalid sign_dir = %d\n", sign_dir);
@@ -620,7 +632,7 @@ static int32_t msm_actuator_move_focus(
 	}
 	curr_lens_pos = a_ctrl->step_position_table[a_ctrl->curr_step_pos];
 	a_ctrl->i2c_tbl_index = 0;
-	CDBG("curr_step_pos =%d dest_step_pos =%d curr_lens_pos=%d\n",
+	CDBG("[actuator]curr_step_pos =%d dest_step_pos =%d curr_lens_pos=%d\n",
 		a_ctrl->curr_step_pos, dest_step_pos, curr_lens_pos);
 
 	while (a_ctrl->curr_step_pos != dest_step_pos) {
@@ -660,6 +672,7 @@ static int32_t msm_actuator_move_focus(
 	/*Free the memory allocated for damping parameters*/
 	kfree(ringing_params_kernel);
 
+    CDBG("[actuator]curr_lens_pos = %d\n",curr_lens_pos);
 	move_params->curr_lens_pos = curr_lens_pos;
 	reg_setting.reg_setting = a_ctrl->i2c_reg_tbl;
 	reg_setting.data_type = a_ctrl->i2c_data_type;
@@ -814,9 +827,13 @@ static int32_t msm_actuator_park_lens(struct msm_actuator_ctrl_t *a_ctrl)
 	if (a_ctrl->park_lens.max_step > a_ctrl->max_code_size)
 		a_ctrl->park_lens.max_step = a_ctrl->max_code_size;
 
-	next_lens_pos = a_ctrl->step_position_table[a_ctrl->curr_step_pos];
-	while (next_lens_pos) {
+//	next_lens_pos = a_ctrl->step_position_table[a_ctrl->curr_step_pos];
+    next_lens_pos = 300;
+	while (next_lens_pos > 20) {
 		/* conditions which help to reduce park lens time */
+		
+		
+#if 0	
 		if (next_lens_pos > (a_ctrl->park_lens.max_step *
 			PARK_LENS_LONG_STEP)) {
 			next_lens_pos = next_lens_pos -
@@ -838,6 +855,10 @@ static int32_t msm_actuator_park_lens(struct msm_actuator_ctrl_t *a_ctrl)
 				(next_lens_pos - a_ctrl->park_lens.
 				max_step) : 0;
 		}
+#endif	
+
+		next_lens_pos = next_lens_pos - 20;
+	
 		a_ctrl->func_tbl->actuator_parse_i2c_params(a_ctrl,
 			next_lens_pos, a_ctrl->park_lens.hw_params,
 			a_ctrl->park_lens.damping_delay);
