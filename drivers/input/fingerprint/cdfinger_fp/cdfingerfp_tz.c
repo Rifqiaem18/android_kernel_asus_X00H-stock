@@ -319,9 +319,13 @@ static void cdfinger_wake_lock(struct cdfingerfp_data *pdata,int arg)
 int cdfinger_report_key(struct cdfingerfp_data *pdata, unsigned long arg)
 {
 
-	key_report_t __user *report = (key_report_t __user *)arg;
-	printk("cdfinger key=0x%04x,value = %d \n",report->key,report->value);
-	input_report_key(pdata->cdfinger_input, report->key, !!report->value);
+	key_report_t report;
+	if ( copy_from_user(&report, (key_report_t *)arg, sizeof(key_report_t)) )
+	{
+		CDFINGER_ERR("%s err\n", __func__);
+		return -1;
+	}
+	input_report_key(pdata->cdfinger_input, report.key, !!report.value);
 	input_sync(pdata->cdfinger_input);
 	return 0;
 }
