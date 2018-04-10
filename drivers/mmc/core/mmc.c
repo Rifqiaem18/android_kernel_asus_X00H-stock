@@ -583,6 +583,8 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		/* check whether the eMMC card supports BKOPS */
 		if ((ext_csd[EXT_CSD_BKOPS_SUPPORT] & 0x1) &&
 				card->ext_csd.hpi) {
+/* delete by liunianliang for SWTASK-487,disable Auto BKOP,20170209 begin*/
+#if 0
 			card->ext_csd.bkops = 1;
 			card->ext_csd.bkops_en = ext_csd[EXT_CSD_BKOPS_EN];
 			card->ext_csd.raw_bkops_status =
@@ -590,6 +592,8 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 			pr_info("%s: BKOPS_EN equals 0x%x\n",
 					mmc_hostname(card->host),
 					card->ext_csd.bkops_en);
+#endif
+/* end*/
 
 		}
 
