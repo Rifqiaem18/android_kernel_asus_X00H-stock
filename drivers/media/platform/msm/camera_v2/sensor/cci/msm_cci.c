@@ -1357,7 +1357,7 @@ static int32_t msm_cci_init(struct v4l2_subdev *sd,
 				CCI_TIMEOUT);
 			if (rc <= 0)
 				pr_err("%s:%d wait failed %d\n", __func__,
-					__LINE__, rc);
+					__LINE__, rc);  
 			mutex_unlock(&cci_dev->cci_master_info[master].
 				mutex_q[SYNC_QUEUE]);
 			mutex_unlock(&cci_dev->cci_master_info[master].

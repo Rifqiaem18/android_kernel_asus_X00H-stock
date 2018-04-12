@@ -1945,7 +1945,7 @@ void msm_isp_process_overflow_irq(
 			dual_vfe_res->vfe_dev[other_vfe_id]);
 		if (other_vfe_dev) {
 			other_vfe_dev->hw_info->vfe_ops.axi_ops.
-				halt(other_vfe_dev, 0);
+				halt(other_vfe_dev, 0);  
 		}
 	}
 

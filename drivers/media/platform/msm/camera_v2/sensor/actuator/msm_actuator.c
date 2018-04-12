@@ -1925,7 +1925,6 @@ static int32_t msm_actuator_platform_probe(struct platform_device *pdev)
 	struct msm_actuator_ctrl_t *msm_actuator_t = NULL;
 	struct msm_actuator_vreg *vreg_cfg;
 	CDBG("Enter\n");
-
 	if (!pdev->dev.of_node) {
 		pr_err("of_node NULL\n");
 		return -EINVAL;
@@ -1974,10 +1973,13 @@ static int32_t msm_actuator_platform_probe(struct platform_device *pdev)
 		pr_err("Error Actuator GPIOs\n");
 	} else {
 		msm_actuator_t->cam_pinctrl_status = 1;
+
+		//pr_err("[actuator]dev_name = %s,pdev->dev.of_node->name = %s\n",pdev->name,pdev->dev.of_node->name);
 		rc = msm_camera_pinctrl_init(
 			&(msm_actuator_t->pinctrl_info), &(pdev->dev));
 		if (rc < 0) {
-			pr_err("ERR: Error in reading actuator pinctrl\n");
+			pr_err("ERR:%s: Error in reading actuator pinctrl,failed rc = %d\n",
+				__func__,rc);
 			msm_actuator_t->cam_pinctrl_status = 0;
 		}
 	}
@@ -2025,6 +2027,7 @@ static int32_t msm_actuator_platform_probe(struct platform_device *pdev)
 		&msm_actuator_v4l2_subdev_fops;
 
 	CDBG("Exit\n");
+	
 	return rc;
 }
 

@@ -91,7 +91,7 @@ static int32_t msm_sensor_driver_create_i2c_v4l_subdev
 	uint32_t session_id = 0;
 	struct i2c_client *client = s_ctrl->sensor_i2c_client->client;
 
-	CDBG("%s %s I2c probe succeeded\n", __func__, client->name);
+	pr_err("\r\n %s %s I2c probe succeeded\n", __func__, client->name);
 	if (0 == s_ctrl->bypass_video_node_creation) {
 		rc = camera_init_v4l2(&client->dev, &session_id);
 		if (rc < 0) {
@@ -135,7 +135,8 @@ static int32_t msm_sensor_driver_create_v4l_subdev
 {
 	int32_t rc = 0;
 	uint32_t session_id = 0;
-
+	
+	CDBG("\r\n %s\r\n",__func__);
 	if (0 == s_ctrl->bypass_video_node_creation) {
 		rc = camera_init_v4l2(&s_ctrl->pdev->dev, &session_id);
 		if (rc < 0) {
@@ -269,6 +270,7 @@ static int32_t msm_sensor_fill_actuator_subdevid_by_name(
 	if (!s_ctrl->sensordata->actuator_name || !of_node)
 		return -EINVAL;
 
+    pr_err("[actuator]actuator_name = %s\n",s_ctrl->sensordata->actuator_name);
 	actuator_name_len = strlen(s_ctrl->sensordata->actuator_name);
 	if (actuator_name_len >= MAX_SENSOR_NAME)
 		return -EINVAL;
@@ -835,15 +837,19 @@ int32_t msm_sensor_driver_probe(void *setting,
 		 */
 		if (slave_info->sensor_id_info.sensor_id ==
 			s_ctrl->sensordata->cam_slave_info->
-				sensor_id_info.sensor_id &&
-			!(strcmp(slave_info->sensor_name,
-			s_ctrl->sensordata->cam_slave_info->sensor_name))) {
-			pr_err("slot%d: sensor name: %s sensor id%d already probed\n",
-				slave_info->camera_id,
-				slave_info->sensor_name,
-				s_ctrl->sensordata->cam_slave_info->
-					sensor_id_info.sensor_id);
-			msm_sensor_fill_sensor_info(s_ctrl,
+		/*		sensor_id_info.sensor_id) {
+			pr_err("slot%d: sensor id%d already probed\n",*/		
+			sensor_id_info.sensor_id && 
+			!(strcmp(slave_info->sensor_name, 
+			s_ctrl->sensordata->cam_slave_info->sensor_name))) { 
+			   pr_err("slot%d: sensor name: %s sensor id%d sensor_id_info.sensor_id %d already probed\n", 
+			           slave_info->camera_id, 
+			           slave_info->sensor_name, 
+				       slave_info->camera_id,
+				       s_ctrl->sensordata->cam_slave_info->
+					   sensor_id_info.sensor_id);
+					   
+			   msm_sensor_fill_sensor_info(s_ctrl,
 				probed_info, entity_name);
 		} else
 			pr_err("slot %d has some other sensor\n",
@@ -1004,7 +1010,7 @@ CSID_TG:
 	else
 		rc = msm_sensor_driver_create_i2c_v4l_subdev(s_ctrl);
 	if (rc < 0) {
-		pr_err("failed: camera creat v4l2 rc %d", rc);
+		pr_err("\r\n failed: camera creat v4l2 rc %d\r\n", rc);
 		goto camera_power_down;
 	}
 
