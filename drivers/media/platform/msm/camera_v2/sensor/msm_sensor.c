@@ -176,6 +176,7 @@ int msm_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 		return -EINVAL;
 	}
 
+	CDBG("\n[camera]%s:%d,sensor_name = %s\n",__func__,__LINE__,sensor_name);
 	if (s_ctrl->set_mclk_23880000)
 		msm_sensor_adjust_mclk(power_info);
 
@@ -269,7 +270,7 @@ int msm_sensor_match_id(struct msm_sensor_ctrl_t *s_ctrl)
 		return rc;
 	}
 
-	pr_debug("%s: read id: 0x%x expected id 0x%x:\n",
+	CDBG("\r\n[camera]%s: read id: 0x%x expected id 0x%x:\r\n",
 			__func__, chipid, slave_info->sensor_id);
 	if (msm_sensor_id_by_mask(s_ctrl, chipid) != slave_info->sensor_id) {
 		pr_err("%s chip id %x does not match %x\n",
@@ -335,6 +336,8 @@ static long msm_sensor_subdev_ioctl(struct v4l2_subdev *sd,
 		pr_err("%s s_ctrl NULL\n", __func__);
 		return -EBADF;
 	}
+
+	CDBG("\r\n %s \r\n",__func__);
 	switch (cmd) {
 	case VIDIOC_MSM_SENSOR_CFG:
 #ifdef CONFIG_COMPAT
@@ -386,8 +389,8 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 	int32_t rc = 0;
 	int32_t i = 0;
 	mutex_lock(s_ctrl->msm_sensor_mutex);
-	CDBG("%s:%d %s cfgtype = %d\n", __func__, __LINE__,
-		s_ctrl->sensordata->sensor_name, cdata->cfgtype);
+	CDBG("\n[camera]%s:%d cfgtype = %d\n", __func__, __LINE__,
+		    cdata->cfgtype);
 	switch (cdata->cfgtype) {
 	case CFG_GET_SENSOR_INFO:
 		memcpy(cdata->cfg.sensor_info.sensor_name,
@@ -471,7 +474,7 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 
 		if (!conf_array.size ||
 			conf_array.size > I2C_REG_DATA_MAX) {
-			pr_err("%s:%d failed\n", __func__, __LINE__);
+			pr_err(" %s:%d failed\n", __func__, __LINE__);
 			rc = -EFAULT;
 			break;
 		}
@@ -539,8 +542,8 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		read_slave_addr = read_config.slave_addr;
 		read_addr_type = read_config.addr_type;
 
-		CDBG("%s:CFG_SLAVE_READ_I2C:", __func__);
-		CDBG("%s:slave_addr=0x%x reg_addr=0x%x, data_type=%d\n",
+		CDBG("\r\n %s:CFG_SLAVE_READ_I2C:", __func__);
+		CDBG("\r\n %s:slave_addr=0x%x reg_addr=0x%x, data_type=%d\n",
 			__func__, read_config.slave_addr,
 			read_config.reg_addr, read_config.data_type);
 		if (s_ctrl->sensor_i2c_client->cci_client) {
@@ -554,11 +557,11 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 			s_ctrl->sensor_i2c_client->client->addr =
 				read_slave_addr >> 1;
 		} else {
-			pr_err("%s: error: no i2c/cci client found.", __func__);
+			pr_err("\r\n %s: error: no i2c/cci client found.", __func__);
 			rc = -EFAULT;
 			break;
 		}
-		CDBG("%s:orig_slave_addr=0x%x, new_slave_addr=0x%x",
+		CDBG("\r\n%s:orig_slave_addr=0x%x, new_slave_addr=0x%x",
 				__func__, orig_slave_addr,
 				read_slave_addr >> 1);
 
@@ -582,7 +585,7 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 			read_config.reg_addr, local_data);
 
 		if (rc < 0) {
-			pr_err("%s:%d: i2c_read failed\n", __func__, __LINE__);
+			pr_err("\r\n %s:%d: i2c_read failed\n", __func__, __LINE__);
 			break;
 		}
 		read_config_ptr->data = local_data;
@@ -594,7 +597,6 @@ static int msm_sensor_config32(struct msm_sensor_ctrl_t *s_ctrl,
 		struct msm_camera_i2c_reg_array *reg_setting = NULL;
 		uint16_t orig_slave_addr = 0, write_slave_addr = 0;
 		uint16_t orig_addr_type = 0, write_addr_type = 0;
-
 		if (s_ctrl->is_csid_tg_mode)
 			goto DONE;
 
@@ -914,7 +916,7 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 	int32_t rc = 0;
 	int32_t i = 0;
 	mutex_lock(s_ctrl->msm_sensor_mutex);
-	CDBG("%s:%d %s cfgtype = %d\n", __func__, __LINE__,
+	CDBG("\r\n %s:%d %s cfgtype = %d\r\n", __func__, __LINE__,
 		s_ctrl->sensordata->sensor_name, cdata->cfgtype);
 	switch (cdata->cfgtype) {
 	case CFG_GET_SENSOR_INFO:
@@ -937,7 +939,7 @@ int msm_sensor_config(struct msm_sensor_ctrl_t *s_ctrl, void __user *argp)
 			s_ctrl->sensordata->sensor_info->position;
 		cdata->cfg.sensor_info.modes_supported =
 			s_ctrl->sensordata->sensor_info->modes_supported;
-		CDBG("%s:%d sensor name %s\n", __func__, __LINE__,
+		CDBG("\r\n %s:%d sensor name %s\r\n", __func__, __LINE__,
 			cdata->cfg.sensor_info.sensor_name);
 		CDBG("%s:%d session id %d\n", __func__, __LINE__,
 			cdata->cfg.sensor_info.session_id);
