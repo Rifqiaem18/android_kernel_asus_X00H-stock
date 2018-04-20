@@ -555,7 +555,7 @@ static int32_t msm_subflash_high(
 		    flash_ctrl->torch_num_sources,flash_ctrl->flash_num_sources);
 
 
-	 pr_err("[flash]Enter\n");	
+	 CDBG("[flash]Enter\n");	
 		
 	/* Turn off torch triggers */
 	for (i = 0; i < flash_ctrl->torch_num_sources; i++)
@@ -943,12 +943,13 @@ static int32_t msm_subflash_get_dt_data(struct device_node *of_node,
 	/* Read the gpio information from device tree */
 	rc = msm_sensor_driver_get_gpio_data(
 		&(fctrl->power_info.gpio_conf), of_node);
-	if (rc < 0) {
-		pr_err("%s:%d msm_sensor_driver_get_gpio_data failed rc %d\n",
-			__func__, __LINE__, rc);
+	if (-ENODEV == rc) {
+		pr_notice("No valid flash GPIOs data\n");
+		rc = 0;
+	} else if (rc < 0) {
+	    pr_err("Error flash GPIOs rc %d\n", rc);
 		return rc;
 	}
-
 	if (fctrl->flash_driver_type == FLASH_DRIVER_DEFAULT)
 		fctrl->flash_driver_type = FLASH_DRIVER_GPIO;
 	CDBG("%s:%d fctrl->flash_driver_type = %d", __func__, __LINE__,
@@ -1044,7 +1045,7 @@ static int32_t msm_subflash_platform_probe(struct platform_device *pdev)
 	struct msm_flash_ctrl_t *flash_ctrl = NULL;
 	struct msm_camera_cci_client *cci_client = NULL;
 
-	CDBG("Enter");
+	pr_err("Enter");
 	if (!pdev->dev.of_node) {
 		pr_err("of_node NULL\n");
 		return -EINVAL;
