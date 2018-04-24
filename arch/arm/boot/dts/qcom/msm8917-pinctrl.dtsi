@@ -1037,12 +1037,12 @@
 		pri-tlmm-ws-lines {
 			pri_tlmm_ws_act: pri_tlmm_ws_act {
 				mux {
-					pins = "gpio87";
+					//pins = "gpio87";
 					function = "pri_mi2s_ws";
 				};
 
 				config {
-					pins = "gpio87";
+					//pins = "gpio87";
 					drive-strength = <16>;
 					bias-disable;
 					output-high;
@@ -1051,12 +1051,12 @@
 
 			pri_tlmm_ws_sus: pri_tlmm_ws_sus {
 				mux {
-					pins = "gpio87";
+					//pins = "gpio87";
 					function = "pri_mi2s_ws";
 				};
 
 				config {
-					pins = "gpio87";
+					//pins = "gpio87";
 					drive-strength = <2>;
 					bias-pull-down;
 					input-enable;
