@@ -17,7 +17,6 @@
 #include "camera.h"
 #include "msm_cci.h"
 #include "msm_camera_dt_util.h"
-#include <linux/hqsysfs.h>
 
 /* Logging macro */
 #undef CDBG
@@ -27,11 +26,6 @@
 
 static struct v4l2_file_operations msm_sensor_v4l2_subdev_fops;
 static int32_t msm_sensor_driver_platform_probe(struct platform_device *pdev);
-
-//yinyapeng add for eeprom 
-bool IsHi556Mount = false;
-bool IsHi846Mount = false;
-
 
 /* Static declaration */
 static struct msm_sensor_ctrl_t *g_sctrl[MAX_CAMERAS];
@@ -91,7 +85,7 @@ static int32_t msm_sensor_driver_create_i2c_v4l_subdev
 	uint32_t session_id = 0;
 	struct i2c_client *client = s_ctrl->sensor_i2c_client->client;
 
-	pr_err("\r\n %s %s I2c probe succeeded\n", __func__, client->name);
+	CDBG("%s %s I2c probe succeeded\n", __func__, client->name);
 	if (0 == s_ctrl->bypass_video_node_creation) {
 		rc = camera_init_v4l2(&client->dev, &session_id);
 		if (rc < 0) {
@@ -135,8 +129,7 @@ static int32_t msm_sensor_driver_create_v4l_subdev
 {
 	int32_t rc = 0;
 	uint32_t session_id = 0;
-	
-	CDBG("\r\n %s\r\n",__func__);
+
 	if (0 == s_ctrl->bypass_video_node_creation) {
 		rc = camera_init_v4l2(&s_ctrl->pdev->dev, &session_id);
 		if (rc < 0) {
@@ -270,7 +263,6 @@ static int32_t msm_sensor_fill_actuator_subdevid_by_name(
 	if (!s_ctrl->sensordata->actuator_name || !of_node)
 		return -EINVAL;
 
-    pr_err("[actuator]actuator_name = %s\n",s_ctrl->sensordata->actuator_name);
 	actuator_name_len = strlen(s_ctrl->sensordata->actuator_name);
 	if (actuator_name_len >= MAX_SENSOR_NAME)
 		return -EINVAL;
@@ -837,19 +829,15 @@ int32_t msm_sensor_driver_probe(void *setting,
 		 */
 		if (slave_info->sensor_id_info.sensor_id ==
 			s_ctrl->sensordata->cam_slave_info->
-		/*		sensor_id_info.sensor_id) {
-			pr_err("slot%d: sensor id%d already probed\n",*/		
-			sensor_id_info.sensor_id && 
-			!(strcmp(slave_info->sensor_name, 
-			s_ctrl->sensordata->cam_slave_info->sensor_name))) { 
-			   pr_err("slot%d: sensor name: %s sensor id%d sensor_id_info.sensor_id %d already probed\n", 
-			           slave_info->camera_id, 
-			           slave_info->sensor_name, 
-				       slave_info->camera_id,
-				       s_ctrl->sensordata->cam_slave_info->
-					   sensor_id_info.sensor_id);
-					   
-			   msm_sensor_fill_sensor_info(s_ctrl,
+				sensor_id_info.sensor_id &&
+			!(strcmp(slave_info->sensor_name,
+			s_ctrl->sensordata->cam_slave_info->sensor_name))) {
+			pr_err("slot%d: sensor name: %s sensor id%d already probed\n",
+				slave_info->camera_id,
+				slave_info->sensor_name,
+				s_ctrl->sensordata->cam_slave_info->
+					sensor_id_info.sensor_id);
+			msm_sensor_fill_sensor_info(s_ctrl,
 				probed_info, entity_name);
 		} else
 			pr_err("slot %d has some other sensor\n",
@@ -978,19 +966,10 @@ CSID_TG:
 		goto free_camera_info;
 	}
 
-	pr_err("[camera]%s,%s,probe succeeded",__func__, slave_info->sensor_name);
+	pr_err("%s probe succeeded", slave_info->sensor_name);
 
 	s_ctrl->bypass_video_node_creation =
 		slave_info->bypass_video_node_creation;
-	/*yinyapeng add for hi556 and hi846 otp 20170617 */
-    if (!strcmp(slave_info->sensor_name,"hi556")) {          
-          IsHi556Mount = true; 
-    } 
-    
-    if (!strcmp(slave_info->sensor_name,"hi846")) {
-          IsHi846Mount = true; 
-    } 
-/**yinyapeng add end**/
 
 	/*
 	 * Update the subdevice id of flash-src based on availability in kernel.
@@ -1010,7 +989,7 @@ CSID_TG:
 	else
 		rc = msm_sensor_driver_create_i2c_v4l_subdev(s_ctrl);
 	if (rc < 0) {
-		pr_err("\r\n failed: camera creat v4l2 rc %d\r\n", rc);
+		pr_err("failed: camera creat v4l2 rc %d", rc);
 		goto camera_power_down;
 	}
 
@@ -1044,12 +1023,6 @@ CSID_TG:
 
 	msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
 
-	if(0 == s_ctrl->id){
-		hq_regiser_hw_info(HWID_MAIN_CAM, (char *)(slave_info->sensor_name));
-	}else if(1 == s_ctrl->id){
-		hq_regiser_hw_info(HWID_SUB_CAM, (char *)(slave_info->sensor_name));
-	}
-	
 	/*
 	 * Set probe succeeded flag to 1 so that no other camera shall
 	 * probed on this slot

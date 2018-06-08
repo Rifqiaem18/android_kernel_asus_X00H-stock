@@ -42,7 +42,7 @@ static const struct v4l2_subdev_internal_ops msm_sensor_init_internal_ops;
 static int msm_sensor_wait_for_probe_done(struct msm_sensor_init_t *s_init)
 {
 	int rc;
-	int tm = 15000;
+	int tm = 10000;
 	if (s_init->module_init_status == 1) {
 		CDBG("msm_cam_get_module_init_status -2\n");
 		return 0;
@@ -135,7 +135,7 @@ static long msm_sensor_init_subdev_do_ioctl(
 	struct sensor_init_cfg_data32 *u32 =
 		(struct sensor_init_cfg_data32 *)arg;
 	struct sensor_init_cfg_data sensor_init_data;
-	
+
 	switch (cmd) {
 	case VIDIOC_MSM_SENSOR_INIT_CFG32:
 		memset(&sensor_init_data, 0, sizeof(sensor_init_data));
@@ -191,7 +191,7 @@ static int __init msm_sensor_init_module(void)
 	s_init->msm_sd.close_seq = MSM_SD_CLOSE_2ND_CATEGORY | 0x6;
 	ret = msm_sd_register(&s_init->msm_sd);
 	if (ret) {
-		pr_err("\r\n %s: msm_sd_register error = %d\n", __func__, ret);
+		CDBG("%s: msm_sd_register error = %d\n", __func__, ret);
 		goto error;
 	}
 	msm_cam_copy_v4l2_subdev_fops(&msm_sensor_init_v4l2_subdev_fops);

@@ -3013,7 +3013,7 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 				if (rc < 0) {
 					enable_irq(cpp_dev->irq->start);
 					mutex_unlock(&cpp_dev->mutex);
-					return rc;  
+					return rc;
 				}
 			}
 			rc = msm_cpp_fw_version(cpp_dev);

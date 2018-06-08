@@ -419,7 +419,7 @@ static int32_t msm_flash_off(struct msm_flash_ctrl_t *flash_ctrl,
 {
 	int32_t i = 0;
 
-	pr_err("[flash]Enter\n");
+	CDBG("Enter\n");
 
 	for (i = 0; i < flash_ctrl->flash_num_sources; i++)
 		if (flash_ctrl->flash_trigger[i])
@@ -607,8 +607,7 @@ static int32_t msm_flash_low(
 	uint32_t curr = 0, max_current = 0;
 	int32_t i = 0;
 
-	pr_err("[flash]Enter\n");
-		
+	CDBG("Enter\n");
 	/* Turn off flash triggers */
 	for (i = 0; i < flash_ctrl->flash_num_sources; i++)
 		if (flash_ctrl->flash_trigger[i])
@@ -649,9 +648,6 @@ static int32_t msm_flash_high(
 	int32_t max_current = 0;
 	int32_t i = 0;
 
-    CDBG("\n[flash]Enter\n");
-    CDBG("torch_num = %d,flash_num = %d\n",
-		    flash_ctrl->torch_num_sources,flash_ctrl->flash_num_sources);		
 	/* Turn off torch triggers */
 	for (i = 0; i < flash_ctrl->torch_num_sources; i++)
 		if (flash_ctrl->torch_trigger[i])
@@ -1283,7 +1279,6 @@ static ssize_t asus_flash_touchlight_file_write(struct file *filp, const char __
 	CDBG("Exit\n");
 	return len;
 }
-
 static const struct file_operations asus_touchlight_file_fops = {
 	.owner = THIS_MODULE,
 	.read = asus_flash_touchlight_file_read,
@@ -1514,11 +1509,10 @@ static int __init msm_flash_init_module(void)
 
 static void __exit msm_flash_exit_module(void)
 {
-	platform_driver_unregister(&msm_flash_platform_driver);	
-
-#ifdef AUSU_FLASHLIGHT_ADJUST_PROC_SUPPORT 
+	platform_driver_unregister(&msm_flash_platform_driver);
+    #ifdef AUSU_FLASHLIGHT_ADJUST_PROC_SUPPORT 
 	asus_touchlight_file_deinit_node();
-	#endif
+#endif
 	i2c_del_driver(&msm_flash_i2c_driver);
 	return;
 }

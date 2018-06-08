@@ -576,23 +576,11 @@ static int32_t msm_actuator_move_focus(
 	int32_t num_steps = move_params->num_steps;
 	struct msm_camera_i2c_reg_setting reg_setting;
 
-	CDBG("[actuator]called, dir %d, num_steps %d\n", dir, num_steps);
+	CDBG("called, dir %d, num_steps %d\n", dir, num_steps);
 
-/*
 	if (dest_step_pos == a_ctrl->curr_step_pos)
 		return rc;
-*/
-	if ((dest_step_pos == a_ctrl->curr_step_pos) || 
-	((dest_step_pos <= a_ctrl->total_steps) && 
-	(a_ctrl->step_position_table[dest_step_pos] == 
-	a_ctrl->step_position_table[a_ctrl->curr_step_pos]))) {
-        CDBG("cci:dest_step_pos = %d\n",dest_step_pos);
-        CDBG("cci:a_ctrl->curr_step_pos = %d\n",a_ctrl->curr_step_pos);
-        CDBG("cci:a_ctrl->step_position_table[%d]= %d\n",dest_step_pos,a_ctrl->step_position_table[dest_step_pos]);
-        CDBG("cci:a_ctrl->step_position_table[%d]) = %d\n",a_ctrl->curr_step_pos,a_ctrl->step_position_table[a_ctrl->curr_step_pos]);
-        return rc;
-    }
-     
+
 	if ((sign_dir > MSM_ACTUATOR_MOVE_SIGNED_NEAR) ||
 		(sign_dir < MSM_ACTUATOR_MOVE_SIGNED_FAR)) {
 		pr_err("Invalid sign_dir = %d\n", sign_dir);
@@ -632,7 +620,7 @@ static int32_t msm_actuator_move_focus(
 	}
 	curr_lens_pos = a_ctrl->step_position_table[a_ctrl->curr_step_pos];
 	a_ctrl->i2c_tbl_index = 0;
-	CDBG("[actuator]curr_step_pos =%d dest_step_pos =%d curr_lens_pos=%d\n",
+	CDBG("curr_step_pos =%d dest_step_pos =%d curr_lens_pos=%d\n",
 		a_ctrl->curr_step_pos, dest_step_pos, curr_lens_pos);
 
 	while (a_ctrl->curr_step_pos != dest_step_pos) {
@@ -672,7 +660,6 @@ static int32_t msm_actuator_move_focus(
 	/*Free the memory allocated for damping parameters*/
 	kfree(ringing_params_kernel);
 
-    CDBG("[actuator]curr_lens_pos = %d\n",curr_lens_pos);
 	move_params->curr_lens_pos = curr_lens_pos;
 	reg_setting.reg_setting = a_ctrl->i2c_reg_tbl;
 	reg_setting.data_type = a_ctrl->i2c_data_type;
@@ -827,13 +814,9 @@ static int32_t msm_actuator_park_lens(struct msm_actuator_ctrl_t *a_ctrl)
 	if (a_ctrl->park_lens.max_step > a_ctrl->max_code_size)
 		a_ctrl->park_lens.max_step = a_ctrl->max_code_size;
 
-//	next_lens_pos = a_ctrl->step_position_table[a_ctrl->curr_step_pos];
-    next_lens_pos = 300;
-	while (next_lens_pos > 20) {
+	next_lens_pos = a_ctrl->step_position_table[a_ctrl->curr_step_pos];
+	while (next_lens_pos) {
 		/* conditions which help to reduce park lens time */
-		
-		
-#if 0	
 		if (next_lens_pos > (a_ctrl->park_lens.max_step *
 			PARK_LENS_LONG_STEP)) {
 			next_lens_pos = next_lens_pos -
@@ -855,10 +838,6 @@ static int32_t msm_actuator_park_lens(struct msm_actuator_ctrl_t *a_ctrl)
 				(next_lens_pos - a_ctrl->park_lens.
 				max_step) : 0;
 		}
-#endif	
-
-		next_lens_pos = next_lens_pos - 20;
-	
 		a_ctrl->func_tbl->actuator_parse_i2c_params(a_ctrl,
 			next_lens_pos, a_ctrl->park_lens.hw_params,
 			a_ctrl->park_lens.damping_delay);
@@ -1925,6 +1904,7 @@ static int32_t msm_actuator_platform_probe(struct platform_device *pdev)
 	struct msm_actuator_ctrl_t *msm_actuator_t = NULL;
 	struct msm_actuator_vreg *vreg_cfg;
 	CDBG("Enter\n");
+
 	if (!pdev->dev.of_node) {
 		pr_err("of_node NULL\n");
 		return -EINVAL;
@@ -1973,13 +1953,10 @@ static int32_t msm_actuator_platform_probe(struct platform_device *pdev)
 		pr_err("Error Actuator GPIOs\n");
 	} else {
 		msm_actuator_t->cam_pinctrl_status = 1;
-
-		//pr_err("[actuator]dev_name = %s,pdev->dev.of_node->name = %s\n",pdev->name,pdev->dev.of_node->name);
 		rc = msm_camera_pinctrl_init(
 			&(msm_actuator_t->pinctrl_info), &(pdev->dev));
 		if (rc < 0) {
-			pr_err("ERR:%s: Error in reading actuator pinctrl,failed rc = %d\n",
-				__func__,rc);
+			pr_err("ERR: Error in reading actuator pinctrl\n");
 			msm_actuator_t->cam_pinctrl_status = 0;
 		}
 	}
@@ -2027,7 +2004,6 @@ static int32_t msm_actuator_platform_probe(struct platform_device *pdev)
 		&msm_actuator_v4l2_subdev_fops;
 
 	CDBG("Exit\n");
-	
 	return rc;
 }
 
