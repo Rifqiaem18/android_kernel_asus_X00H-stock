@@ -5,7 +5,7 @@ qcom,2974245_huaqin_ca456580gcos_4020mah_averaged_masterslave_jun29th2017 {
 	qcom,nom-batt-capacity-mah = <4020>;
 	qcom,batt-id-kohm = <51>;
 	qcom,battery-beta = <3435>;
-	qcom,battery-type = "C11P1609-O-01-0002-14.2016.1705.302";
+	qcom,battery-type = "C11P1609-O-01-0001-14.2016.1705.302";
 	qcom,thermal-coefficients = [C5 86 BE 50 D1 37];
 	qcom,chg-rslow-comp-c1 = <3869982>;
 	qcom,chg-rslow-comp-c2 = <6737599>;
