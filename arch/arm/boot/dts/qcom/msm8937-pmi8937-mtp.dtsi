@@ -131,8 +131,12 @@
 /{
 	mtp_batterydata: qcom,battery-data {
 		qcom,batt-id-range-pct = <15>;
-		#include "batterydata-itech-3000mah.dtsi"
-		#include "batterydata-ascent-3450mAh.dtsi"
+		#include "batterydata-asus1516-5000mah-1st.dtsi"
+		#include "batterydata-asus1526-4120mah-1st.dtsi"
+		#include "batterydata-asus1516-5000mah-2nd.dtsi" /* this one is unused because the BATT-ID value is same as before (1st) */
+		//#include "batterydata-itech-3000mah.dtsi"
+		//#include "batterydata-ascent-3450mAh.dtsi"  
+		//#include "batterydata_Asus_4850mAh.dtsi"
 	};
 };
 
