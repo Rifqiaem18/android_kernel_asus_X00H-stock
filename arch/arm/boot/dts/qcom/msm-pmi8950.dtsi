@@ -564,7 +564,7 @@
 				qcom,max-current = <1000>;
 				qcom,duration = <1280>;
 				qcom,id = <0>;
-				qcom,current = <625>;
+				qcom,current = <950>;
 			};
 
 			pmi8950_flash1: qcom,flash_1 {
@@ -575,7 +575,7 @@
 				qcom,max-current = <1000>;
 				qcom,duration = <1280>;
 				qcom,id = <1>;
-				qcom,current = <625>;
+				qcom,current = <200>;
 			};
 
 			pmi8950_torch0: qcom,torch_0 {
@@ -583,9 +583,9 @@
 				qcom,led-name = "led:torch_0";
 				qcom,default-led-trigger =
 						"torch0_trigger";
-				qcom,max-current = <200>;
+				qcom,max-current = <150>;
 				qcom,id = <0>;
-				qcom,current = <120>;
+				qcom,current = <110>;
 			};
 
 			pmi8950_torch1: qcom,torch_1 {
@@ -593,9 +593,9 @@
 				qcom,led-name = "led:torch_1";
 				qcom,default-led-trigger =
 						"torch1_trigger";
-				qcom,max-current = <200>;
+				qcom,max-current = <150>;
 				qcom,id = <1>;
-				qcom,current = <120>;
+				qcom,current = <110>;
 			};
 
 			pmi8950_switch: qcom,switch {
@@ -611,6 +611,21 @@
 					regulator-name = "pon_spare_reg";
 				};
 			};
+			
+		   pmi8950_switch1: qcom,switch_1 {
+				label = "switch";
+				qcom,led-name = "led:switch_1";
+				qcom,default-led-trigger =
+						"switch1_trigger";
+				qcom,max-current = <1000>;
+				qcom,duration = <1280>;
+				qcom,id = <3>;
+				qcom,current = <625>;
+				reg0 {
+					regulator-name = "pon_spare_reg";
+				};
+			};
+			
 		};
 
 		pmi_haptic: qcom,haptic@c000 {
