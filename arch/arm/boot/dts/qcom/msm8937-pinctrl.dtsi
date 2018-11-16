@@ -1263,6 +1263,44 @@
 			 };
 		};
 
+                goodix_reset_reset: goodix_reset_reset {
+                        mux {
+                                pins = "gpio2";
+                                function = "gpio";
+                        };
+                        config {
+                                pins = "gpio2";
+                                drive-strength = <2>;
+                                bias-disable = <0>;
+                                output-low;
+                        };
+                };
+                goodix_reset_active: goodix_reset_active {
+                        mux {
+                                pins = "gpio2";
+                                function = "gpio";
+                        };
+                        config {
+                                pins = "gpio2";
+                                drive-strength = <2>;
+                                bias-disable = <0>;
+                                output-high;
+                        };
+                };
+                goodix_irq_active: goodix_irq_active {
+                        mux {
+                                pins = "gpio1";
+                                function = "gpio";
+                        };
+                        config {
+                                pins = "gpio1";
+                                drive-strength = <2>;
+                                bias-disable = <0>;
+                                input-enable;
+                        };
+                };
+
+
 
 	};
 };
