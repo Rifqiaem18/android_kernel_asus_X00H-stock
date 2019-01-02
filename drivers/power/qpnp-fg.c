@@ -2826,7 +2826,8 @@ static char charger_limit[8] = "0";
 static bool charge_disable = 0;
 static struct proc_dir_entry *limit_enbale_entry = NULL;
 static struct proc_dir_entry *limit_entry = NULL;
-
+extern int charge_limit_usb_reinsert;
+int lifetime_is_enabled = 0;
 #define CHARGER_LIMIT_EN_PROC_FILE     "driver/charger_limit_enable"
 #define CHARGER_LIMIT_PROC_FILE     "driver/charger_limit"
 #define CHARGE_LIMIT_DELAY_MS  5000   //5S
@@ -2916,9 +2917,16 @@ static ssize_t charger_limit_write_proc(struct file *file, const char __user *bu
 
 		limit_capacity = (int)simple_strtol(charger_limit,NULL,10);
 		
+//TQY added at 20180308 for DemoApp and lifetime different trategy start
+	if(limit_capacity == 80){
+		lifetime_is_enabled = 1;
+	}else{
+		lifetime_is_enabled = 0;
+	}
+//TQY added at 20180308 for DemoApp and lifetime different trategy end
 	printk("byr_: %s, charger_limit = %s\n", __func__, charger_limit);
 	
-	printk("byr_: %s, capacity = %d\n", __func__, limit_capacity);
+	printk("byr_: %s, capacity = %d, lifetime_is_enabled = %d\n", __func__, limit_capacity,lifetime_is_enabled);
 
 	return size;
 }
@@ -2990,6 +2998,7 @@ static void charge_limit_work(struct work_struct *work)
 			fg_smbchg_charging_en(0);
 			charge_disable = 1;
 			printk("fg_smbchg_charging_en(0) charge_disable= %d \n",charge_disable);
+			charge_limit_usb_reinsert=0;
 //		}
 
 	}else if (capacity <= limit_capacity_low){
@@ -2997,8 +3006,17 @@ static void charge_limit_work(struct work_struct *work)
 			fg_smbchg_charging_en(1);
 			charge_disable = 0;
 			printk("fg_smbchg_charging_en(1)charge_disable= %d \n",charge_disable);
+			charge_limit_usb_reinsert=0;
+		}
+//TQY added at 20180112 for DemoApp recover charge when usb reinsert while capacity within [56,59] start
+	}else{
+			if(1 == charge_limit_usb_reinsert){
+			fg_smbchg_charging_en(1);
+			charge_disable = 0;
+			printk("USB reinsert fg_smbchg_charging_en(1)charge_disable= %d \n",charge_disable);
 		}
 	}
+//TQY added at 20180112 for DemoApp recover charge when usb reinsert while capacity within [56,59] end
 
 	schedule_delayed_work(&limit_chip->charge_limit,msecs_to_jiffies(CHARGE_LIMIT_DELAY_MS));
 		

@@ -1481,20 +1481,48 @@ static int smbchg_charging_en(struct smbchg_chip *chip, bool en)
 			EN_BAT_CHG_BIT, en ? 0 : EN_BAT_CHG_BIT);
 }
 
+int charge_limit_usb_reinsert=0;
 struct smbchg_chip *chip_b = NULL;
+extern int lifetime_is_enabled;
 void fg_smbchg_charging_en(bool en)
 { 
 	int rc = 0;
+	union power_supply_propval limit_psp={!!en,};
 	/*jiahao add for ZQL1526-470 @2017-07-22 start*/
 	if(chip_b == NULL){
 		printk("chip_b is NULL, return directly!!!\n");
 		return;
 	}
 	/*jiahao add for ZQL1526-470 @2017-07-22 end*/
-	rc = smbchg_charging_en(chip_b, en);
-		if (rc < 0) {
-		printk("byr__ Couldn't enable battery charging=%d\n", rc);
+//	rc = smbchg_charging_en(chip_b, en);
+//		if (rc < 0) {
+//		printk("byr__ Couldn't enable battery charging=%d\n", rc);
+//	}
+//TQY added at 20180112 for DemoApp draw current from battery when charge disabled start
+//TQY added at 20180308 for DemoApp and lifetime different trategy start
+	if(chip_b->batt_psy.set_property){
+		if(lifetime_is_enabled == 1){
+			rc=chip_b->batt_psy.set_property(&chip_b->batt_psy, POWER_SUPPLY_PROP_BATTERY_CHARGING_ENABLED, &limit_psp);
+			if (rc) {
+				pr_err("TQY Could not set POWER_SUPPLY_PROP_BATTERY_CHARGING_ENABLED %d\n", en);
+				return;
+			}
+		}else{
+			rc=chip_b->batt_psy.set_property(&chip_b->batt_psy, POWER_SUPPLY_PROP_BATTERY_CHARGING_ENABLED, &limit_psp);
+			if (rc) {
+				pr_err("TQY Could not set POWER_SUPPLY_PROP_BATTERY_CHARGING_ENABLED %d\n", en);
+				return;
+			}
+			rc=chip_b->batt_psy.set_property(&chip_b->batt_psy, POWER_SUPPLY_PROP_CHARGING_ENABLED, &limit_psp);
+			if (rc) {
+				pr_err("TQY Could not set POWER_SUPPLY_PROP_CHARGING_ENABLED %d\n", en);
+				return;
+			}
+		}
+
 	}
+//TQY added at 20180308 for DemoApp and lifetime different trategy end
+//TQY added at 20180112 for DemoApp draw current from battery when charge disabled end
 }
 
 static int smbchg_otg_regulator_disable(struct regulator_dev *rdev);
@@ -5153,6 +5181,8 @@ static void handle_usb_removal(struct smbchg_chip *chip)
 		HVDCP_SHORT_DEGLITCH_VOTER, false, 0);
 	if (!chip->hvdcp_not_supported)
 		restore_from_hvdcp_detection(chip);
+		
+	charge_limit_usb_reinsert=0;
 }
 
 static bool is_usbin_uv_high(struct smbchg_chip *chip)
@@ -5321,6 +5351,8 @@ static void handle_usb_insertion(struct smbchg_chip *chip)
 	{
 		asus_charger_id_detected(chip);
 	}
+
+	charge_limit_usb_reinsert=1;
 }
 
 void update_usb_status(struct smbchg_chip *chip, bool usb_present, bool force)
