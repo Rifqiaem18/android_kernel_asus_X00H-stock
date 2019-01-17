@@ -112,18 +112,6 @@
                cdfinger,gpio_irq = <&tlmm 1 0>;
        };
 
-
-	hbtp {
-		compatible = "qcom,hbtp-input";
-		vcc_ana-supply = <&pm8917_l10>;
-		vcc_dig-supply = <&pm8917_l5>;
-		qcom,afe-load = <50000>;
-		qcom,afe-vtg-min = <2850000>;
-		qcom,afe-vtg-max = <2850000>;
-		qcom,dig-load = <15000>;
-		qcom,dig-vtg-min = <1800000>;
-		qcom,dig-vtg-max = <1800000>;
-	};
 };
 
 &flash_led {
@@ -140,11 +128,8 @@
 };
 
 &pmi_haptic{
-	qcom,actuator-type = "lra";
-	qcom,wave-play-rate-us = <4165>;
-	qcom,lra-auto-res-mode="qwd";
-	qcom,lra-high-z="opt1";
-	qcom,lra-res-cal-period = <0>;
+	status = "ok";
+	qcom,actuator-type = "erm";
 };
 
 &blsp1_uart2 {
