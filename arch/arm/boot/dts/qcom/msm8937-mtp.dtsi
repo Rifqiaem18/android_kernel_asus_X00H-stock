@@ -63,6 +63,7 @@
 			gpios = <&tlmm 91 0x1>;
 			linux,input-type = <1>;
 			linux,code = <115>;
+			gpio-key,wakeup;//could wakeup system
 			debounce-interval = <15>;
 		};
 	};
