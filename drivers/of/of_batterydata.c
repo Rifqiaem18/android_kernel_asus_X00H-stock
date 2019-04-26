@@ -20,6 +20,8 @@
 #include <linux/batterydata-lib.h>
 #include <linux/power_supply.h>
 
+int Current_battery_mA = 0;
+
 static int of_batterydata_read_lut(const struct device_node *np,
 			int max_cols, int max_rows, int *ncols, int *nrows,
 			int *col_legend_data, int *row_legend_data,
@@ -406,6 +408,12 @@ struct device_node *of_batterydata_get_best_profile(
 		pr_info("%s found\n", battery_type);
 	else
 		pr_info("%s found\n", best_node->name);
+
+	rc = of_property_read_u32(best_node, "qcom,nom-batt-capacity-mah",
+					&Current_battery_mA);
+	if (rc) {
+		pr_err("Error reading qcom,nom-batt-capacity-mah property rc=%d\n", rc);
+	}
 
 	return best_node;
 }

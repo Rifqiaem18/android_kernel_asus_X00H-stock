@@ -3457,6 +3457,8 @@ static int smbchg_float_voltage_comp_set(struct smbchg_chip *chip, int code)
 #define VHIGH_RANGE_FLOAT_MIN_MV	4360
 #define VHIGH_RANGE_FLOAT_MIN_VAL	0x2C
 #define VHIGH_RANGE_FLOAT_STEP_MV	20
+extern int condition_value;
+extern int FV_JEITA_uV;
 static int smbchg_float_voltage_set(struct smbchg_chip *chip, int vfloat_mv)
 {
 	struct power_supply *parallel_psy = get_parallel_psy(chip);
@@ -3467,6 +3469,10 @@ static int smbchg_float_voltage_set(struct smbchg_chip *chip, int vfloat_mv)
 		dev_err(chip->dev, "bad float voltage mv =%d asked to set\n",
 					vfloat_mv);
 		return -EINVAL;
+	}
+
+	if (condition_value) {
+		vfloat_mv = FV_JEITA_uV;
 	}
 
 	if (vfloat_mv <= HIGH_RANGE_FLOAT_MIN_MV) {
