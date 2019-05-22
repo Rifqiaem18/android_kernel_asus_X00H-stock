@@ -230,7 +230,7 @@
 			qcom,bms-psy-name = "bms";
 			qcom,dc-psy-type = "Mains";
 			qcom,dc-psy-ma = <2000>;
-			qcom,thermal-mitigation = <2000 1500 1000 800>; //<1500 700 600 0>;
+			qcom,thermal-mitigation = <1500 700 600 0>; //<1500 700 600 0>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,force-aicl-rerun;
 			qcom,aicl-rerun-period-s = <180>;
