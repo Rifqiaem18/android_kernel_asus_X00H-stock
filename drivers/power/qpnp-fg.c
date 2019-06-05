@@ -10938,10 +10938,10 @@ static int fg_probe(struct spmi_device *spmi)
 	init_battery_safety(chip);
 	create_batt_cycle_count_proc_file();
 	register_reboot_notifier(&reboot_blk);
-	schedule_delayed_work(&battery_safety_work, 30 * HZ);	// first delay work queue after boot 100s fixing battery or adc initial failed
+	schedule_delayed_work(&battery_safety_work, 90 * HZ);	// first delay work queue after boot 100s fixing battery or adc initial failed
 	//ASUS_BSP battery safety upgrade ---
 	/* ASUS BSP battery health info +++ */
-	schedule_delayed_work(&battery_health_work, 30 * HZ); // battery_health_work
+	schedule_delayed_work(&battery_health_work, 90 * HZ); // battery_health_work
 
 	pr_info("FG Probe success - FG Revision DIG:%d.%d ANA:%d.%d PMIC subtype=%d\n",
 		chip->revision[DIG_MAJOR], chip->revision[DIG_MINOR],
