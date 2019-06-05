@@ -28,7 +28,7 @@ struct BAT_HEALTH_DATA_BACKUP {
     int health;
 };
 
-#define	BATTERY_HEALTH_UPGRADE_TIME 5 //ASUS_BS battery health upgrade
+#define	BATTERY_HEALTH_UPGRADE_TIME 1 //ASUS_BS battery health upgrade
 #define	BATTERY_METADATA_UPGRADE_TIME 60 //ASUS_BS battery health upgrade
 #define BAT_HEALTH_DATA_OFFSET  0x0
 #define BAT_HEALTH_DATA_MAGIC  0x86
