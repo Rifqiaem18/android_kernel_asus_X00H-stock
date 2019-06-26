@@ -83,7 +83,7 @@
 #define QPNP_FG_DEV_NAME "qcom,qpnp-fg"
 #define MEM_IF_TIMEOUT_MS	5000
 #define FG_CYCLE_MS		1500
-#define BUCKET_COUNT		20
+#define BUCKET_COUNT		8
 #define BUCKET_SOC_PCT		(256 / BUCKET_COUNT)
 
 #define BCL_MA_TO_ADC(_current, _adc_val) {		\
