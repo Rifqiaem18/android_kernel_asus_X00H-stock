@@ -10503,7 +10503,11 @@ static int backup_bat_health(void)
 	bat_health = g_bat_health_data.bat_health;
 
 	if(g_health_upgrade_index == BAT_HEALTH_NUMBER_MAX-1){
-		g_health_upgrade_index = 1;
+		//g_health_upgrade_index = 1;
+		for(i=1;i<BAT_HEALTH_NUMBER_MAX-1;i++) {
+                       strcpy(g_bat_health_data_backup[i].date, g_bat_health_data_backup[i+1].date);
+                       g_bat_health_data_backup[i].health = g_bat_health_data_backup[i+1].health;
+                }
 	}else{
 		g_health_upgrade_index++;
 	}
