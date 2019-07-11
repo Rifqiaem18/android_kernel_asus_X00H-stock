@@ -10,7 +10,7 @@
 
 
 //ASUS_BS battery health upgrade +++
-#define BAT_HEALTH_NUMBER_MAX 21
+#define BAT_HEALTH_NUMBER_MAX 11
 
 struct BAT_HEALTH_DATA {
 	int magic;
