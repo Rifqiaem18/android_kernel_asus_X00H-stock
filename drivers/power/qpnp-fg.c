@@ -147,7 +147,6 @@ static struct BAT_HEALTH_DATA_BACKUP g_bat_health_data_backup[BAT_HEALTH_NUMBER_
 	{"", 0},
 	{"", 0},
 	{"", 0},
-/*	{"", 0},
 	{"", 0},
 	{"", 0},
 	{"", 0},
@@ -156,7 +155,8 @@ static struct BAT_HEALTH_DATA_BACKUP g_bat_health_data_backup[BAT_HEALTH_NUMBER_
 	{"", 0},
 	{"", 0},
 	{"", 0},
-	{"", 0},*/
+	{"", 0},
+	{"", 0},
 	{"", 0}
 };
 /* add for asus battery health update end */
