@@ -36,7 +36,7 @@ struct BAT_HEALTH_DATA_BACKUP {
 #define ZD553KL_DESIGNED_CAPACITY 3000 //mAh
 #define BAT_HEALTH_DATA_FILE_NAME   "/factory/bat_health_binary"
 #define BAT_HEALTH_DATA_SD_FILE_NAME   "/sdcard/.bh"
-#define BAT_HEALTH_START_LEVEL 98
+#define BAT_HEALTH_START_LEVEL 70
 #define BAT_HEALTH_END_LEVEL 100
 
 
