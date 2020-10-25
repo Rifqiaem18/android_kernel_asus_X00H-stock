@@ -10,6 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+#define HQ_HARDWARE_BOARD_V3 1
 
 &soc {
 	tlmm: pinctrl@1000000 {
@@ -20,8 +21,13 @@
 		#gpio-cells = <2>;
 		interrupt-controller;
 		#interrupt-cells = <2>;
+		
+#if HQ_HARDWARE_BOARD_V3
+    #include "msm8917-camera-pinctrl-boardv3.dtsi" 
+#else
+    #include "msm8917-camera-pinctrl.dtsi"
+#endif
 
-#include "msm8917-camera-pinctrl.dtsi"
 
 		/* add pingrp for touchscreen */
 		pmx_ts_int_active {
@@ -687,6 +693,43 @@
 			 };
 		};
 
+                goodix_reset_reset: goodix_reset_reset {
+                        mux {
+                                pins = "gpio2";
+                                function = "gpio";
+                        };
+                        config {
+                                pins = "gpio2";
+                                drive-strength = <2>;
+                                bias-disable = <0>;
+                                output-low;
+                        };
+                };
+                goodix_reset_active: goodix_reset_active {
+                        mux {
+                                pins = "gpio2";
+                                function = "gpio";
+                        };
+                        config {
+                                pins = "gpio2";
+                                drive-strength = <2>;
+                                bias-disable = <0>;
+                                output-high;
+                        };
+                };
+                goodix_irq_active: goodix_irq_active {
+                        mux {
+                                pins = "gpio1";
+                                function = "gpio";
+                        };
+                        config {
+                                pins = "gpio1";
+                                drive-strength = <2>;
+                                bias-disable = <0>;
+                                input-enable;
+                        };
+                };
+
 		sdc2_wlan_gpio {
 			sdc2_wlan_gpio_active: sdc2_wlan_gpio_active {
 				config {
@@ -994,12 +1037,12 @@
 		pri-tlmm-ws-lines {
 			pri_tlmm_ws_act: pri_tlmm_ws_act {
 				mux {
-					pins = "gpio87";
+					pins = "gpio86";
 					function = "pri_mi2s_ws";
 				};
 
 				config {
-					pins = "gpio87";
+					pins = "gpio86";
 					drive-strength = <16>;
 					bias-disable;
 					output-high;
@@ -1008,12 +1051,12 @@
 
 			pri_tlmm_ws_sus: pri_tlmm_ws_sus {
 				mux {
-					pins = "gpio87";
+					pins = "gpio86";
 					function = "pri_mi2s_ws";
 				};
 
 				config {
-					pins = "gpio87";
+					pins = "gpio86";
 					drive-strength = <2>;
 					bias-pull-down;
 					input-enable;

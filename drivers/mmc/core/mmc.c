@@ -583,6 +583,8 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		/* check whether the eMMC card supports BKOPS */
 		if ((ext_csd[EXT_CSD_BKOPS_SUPPORT] & 0x1) &&
 				card->ext_csd.hpi) {
+/* delete by liunianliang for SWTASK-487,disable Auto BKOP,20170209 begin*/
+#if 0
 			card->ext_csd.bkops = 1;
 			card->ext_csd.bkops_en = ext_csd[EXT_CSD_BKOPS_EN];
 			card->ext_csd.raw_bkops_status =
@@ -590,6 +592,8 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 			pr_info("%s: BKOPS_EN equals 0x%x\n",
 					mmc_hostname(card->host),
 					card->ext_csd.bkops_en);
+#endif
+/* end*/
 
 		}
 
@@ -799,6 +803,134 @@ out:
 	return err;
 }
 
+// add by liunianliang for SWTASK-119,2017.02.17 begin
+static char* calculate_emmc_size(struct mmc_card *card) {
+	BUG_ON(!card);
+	if (card->ext_csd.sectors <= 16777216 ) { // (8u * 1024 * 1024 * 1024) / 512
+		return "8";
+	} else if (card->ext_csd.sectors <= 33554432) { // (16u * 1024 * 1024 * 1024) / 512
+		return "16";
+	} else if (card->ext_csd.sectors <= 67108864) { // (32u * 1024 * 1024 * 1024) / 512
+		return "32";
+	} else if (card->ext_csd.sectors <= 134217728) { // (64u * 1024 * 1024 * 1024) / 512
+		return "64";
+	} else {
+		return "UNKNOW";
+	}
+}
+
+static void mmc_set_info(struct mmc_card *card) {
+	int offset;
+	if (card->cid.manfid == 0x45) {
+		/* Sandisk 8G */
+		if (!strcmp(card->cid.prod_name, "SEM08G"))
+		{
+			offset += sprintf(card->mmc_info, "Sandisk8G-");
+			sprintf(card->mmc_total_size, "8");
+		}
+		/* Sandisk 16G */
+		else if (!strcmp(card->cid.prod_name, "SEM16G"))
+		{
+			offset += sprintf(card->mmc_info, "Sandisk16G-");
+			sprintf(card->mmc_total_size, "16");
+		}
+		 /* Sandisk 32G */
+		else if (!strcmp(card->cid.prod_name, "SEM32G"))
+		{
+			offset += sprintf(card->mmc_info, "Sandisk32G-");
+			sprintf(card->mmc_total_size, "32");
+		}
+		/* Sandisk 64G */
+		else if (!strcmp(card->cid.prod_name, "SEM64G"))
+		{
+			offset += sprintf(card->mmc_info, "Sandisk64G-");
+			sprintf(card->mmc_total_size, "64");
+		}
+		/* Sandisk 128G */
+		else if (!strcmp(card->cid.prod_name, "SEM128"))
+		{
+			offset += sprintf(card->mmc_info, "Sandisk128G-");
+			sprintf(card->mmc_total_size, "128");
+		}
+		else {
+			sprintf(card->mmc_total_size, calculate_emmc_size(card));
+		}
+	} else if (card->cid.manfid == 0x90) {
+		/* Hynix 4G */
+		if (!strncmp(card->cid.prod_name, "H4G1d", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix4G-");
+			sprintf(card->mmc_total_size, "4");
+		}
+		/* Hynix 8G */
+		else if (!strncmp(card->cid.prod_name, "H8G2d", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix8G-");
+			sprintf(card->mmc_total_size, "8");
+		}
+		/* Hynix 16G */
+		else if (!strncmp(card->cid.prod_name, "HAG2e", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix16G-");
+			sprintf(card->mmc_total_size, "16");
+		}
+		/* Hynix 32G */
+		else if (!strncmp(card->cid.prod_name, "HBG4e", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix32G-");
+			sprintf(card->mmc_total_size, "32");
+		}
+		/* Hynix 64G */
+		else if (!strncmp(card->cid.prod_name, "HCG8e", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix64G-");
+			sprintf(card->mmc_total_size, "64");
+		}
+		/* Hynix 8G */
+		else if (!strncmp(card->cid.prod_name, "H8G2d", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix8G-");
+			sprintf(card->mmc_total_size, "8");
+		}
+		/* Hynix 16G */
+		else if (!strncmp(card->cid.prod_name, "HAG4", 4))
+		{
+			offset += sprintf(card->mmc_info, "Hynix16G-");
+			sprintf(card->mmc_total_size, "16");
+		}
+		/* Hynix 32G */
+		else if (!strncmp(card->cid.prod_name, "HBG8d", 5))
+		{
+			offset += sprintf(card->mmc_info, "Hynix32G-");
+			sprintf(card->mmc_total_size, "32");
+		}
+		else {
+			sprintf(card->mmc_total_size, calculate_emmc_size(card));
+		}
+	} else if (card->cid.manfid == 0x13) {
+			offset += sprintf(card->mmc_info, "MicronXXG-");
+			sprintf(card->mmc_total_size, calculate_emmc_size(card));
+	} else if (card->cid.manfid == 0x15) {
+			offset += sprintf(card->mmc_info, "SamsungXXG-");
+			sprintf(card->mmc_total_size, calculate_emmc_size(card));
+	}
+	pr_info("%s: manfid:0x%x, sectors:0x%x, prod_name:%s, mmc_info:%s mmc_total_size:%s\n",
+		mmc_hostname(card->host), card->cid.manfid, card->ext_csd.sectors, card->cid.prod_name, card->mmc_info, card->mmc_total_size);
+
+	return;
+}
+
+static char* asus_get_emmc_total_size(struct mmc_card *card)
+{
+	BUG_ON(!card);
+
+	return card->mmc_total_size;
+}
+
+MMC_DEV_ATTR(emmc_total_size, "%s\n", asus_get_emmc_total_size(card));
+MMC_DEV_ATTR(emmc_sectors, "%u\n", card->ext_csd.sectors);
+// end
+
 MMC_DEV_ATTR(cid, "%08x%08x%08x%08x\n", card->raw_cid[0], card->raw_cid[1],
 	card->raw_cid[2], card->raw_cid[3]);
 MMC_DEV_ATTR(csd, "%08x%08x%08x%08x\n", card->raw_csd[0], card->raw_csd[1],
@@ -827,6 +959,8 @@ MMC_DEV_ATTR(enhanced_rpmb_supported, "%#x\n",
 MMC_DEV_ATTR(rel_sectors, "%#x\n", card->ext_csd.rel_sectors);
 
 static struct attribute *mmc_std_attrs[] = {
+	&dev_attr_emmc_total_size.attr,        //add by liunianliang for SWTASK-119
+	&dev_attr_emmc_sectors.attr,
 	&dev_attr_cid.attr,
 	&dev_attr_csd.attr,
 	&dev_attr_date.attr,
@@ -2106,6 +2240,10 @@ reinit:
 			goto reinit;
 		}
 	}
+
+	// add by liunianliang for SWTASK-119,2017.02.17 begin
+	mmc_set_info(card);
+	// end
 
 	return 0;
 
